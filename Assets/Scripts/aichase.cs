@@ -16,7 +16,6 @@ public class ChasePlayer : MonoBehaviour
     }
 
     void Chase(){
-        // Move towards the player
         transform.position = Vector3.MoveTowards(transform.position, player.position, speed * Time.deltaTime);
     }
 }

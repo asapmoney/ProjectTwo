@@ -3,17 +3,17 @@ using System.Collections.Generic;
 
 public class AIPatrol : MonoBehaviour
 {
-    public List<Transform> waypoints;  // List of waypoints
-    public float speed = 2f;           // Movement speed
-    public float detectionDistance = 2f; // Wall detection range
-    public float rotationSpeed = 2f;   // Rotation speed
+    public List<Transform> waypoints;  
+    public float speed = 2f;          
+    public float detectionDistance = 2f; 
+    public float rotationSpeed = 2f;   
 
-    private int currentWaypoint = 0;   // Current waypoint index
-    private Vector3 targetPosition;    // Current target position
-    public Transform player;           // Reference to the player
-    public float chaseRange = 10f;     // Distance at which AI starts chasing the player
+    private int currentWaypoint = 0;   
+    private Vector3 targetPosition;   
+    public Transform player;           
+    public float chaseRange = 10f;     
 
-    private bool isChasing = false;    // Whether the AI is currently chasing the player
+    private bool isChasing = false;    
 
     void Start()
     {
@@ -25,13 +25,13 @@ public class AIPatrol : MonoBehaviour
 
     void Update()
     {
-        // If the player is within chase range, switch to chase mode
+        
         float distanceToPlayer = Vector3.Distance(transform.position, player.position);
         if (distanceToPlayer < chaseRange)
         {
             if (!isChasing)
             {
-                // Start chasing the player
+                
                 isChasing = true;
                 StopPatrolling();
             }
@@ -39,12 +39,12 @@ public class AIPatrol : MonoBehaviour
         }
         else if (isChasing)
         {
-            // Player is out of range, stop chasing and resume patrolling
+            
             isChasing = false;
             StartPatrolling();
         }
 
-        // If not chasing, patrol the waypoints
+        
         if (!isChasing)
         {
             MoveTowardsTarget();
@@ -63,7 +63,7 @@ public class AIPatrol : MonoBehaviour
 
     void Patrol()
     {
-        // Check if we've reached the current waypoint
+     
         if (Vector3.Distance(transform.position, targetPosition) < 0.5f)
         {
             SelectNextWaypoint();
@@ -72,7 +72,7 @@ public class AIPatrol : MonoBehaviour
 
     void CheckWallDetection()
     {
-        // Raycasting to detect walls while patrolling
+       
         RaycastHit hit;
         Vector3 forward = transform.TransformDirection(Vector3.forward);
         if (Physics.Raycast(transform.position, forward, out hit, detectionDistance))
@@ -96,7 +96,7 @@ public class AIPatrol : MonoBehaviour
     {
         if (waypoints.Count == 0) return;
 
-        // Select a random waypoint different from the current one
+       
         int newWaypoint = currentWaypoint;
         while (newWaypoint == currentWaypoint)
         {
@@ -106,7 +106,6 @@ public class AIPatrol : MonoBehaviour
         targetPosition = waypoints[currentWaypoint].position;
     }
 
-    // Optional: Visualize Raycast in the Scene view
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -115,22 +114,18 @@ public class AIPatrol : MonoBehaviour
 
     void Chase()
     {
-        // Make sure the AI only moves horizontally (on the XZ plane).
         Vector3 targetPositionFlat = new Vector3(player.position.x, transform.position.y, player.position.z);
 
-        // Perform raycast to check if there's a wall in front of the AI
         RaycastHit hit;
         Vector3 direction = (targetPositionFlat - transform.position).normalized;
         if (Physics.Raycast(transform.position, direction, out hit, detectionDistance))
         {
-            // If there is a wall ahead, stop chasing
             if (hit.collider.CompareTag("Wall"))
             {
                 return;
             }
         }
 
-        // Move towards the player horizontally, ignoring the Y-axis
         transform.position = Vector3.MoveTowards(transform.position, targetPositionFlat, speed * Time.deltaTime);
         Vector3 moveDirection = (targetPositionFlat - transform.position).normalized;
         Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
@@ -139,14 +134,10 @@ public class AIPatrol : MonoBehaviour
 
     void StartPatrolling()
     {
-        // Resume patrolling by setting the target position to the current waypoint
         targetPosition = waypoints[currentWaypoint].position;
     }
 
     void StopPatrolling()
     {
-        // Optional: Disable patrolling logic if needed, like stopping movement
-        // In this case, we just stop the waypoint selection until the player is out of range
-        // This could be expanded with additional behaviors like pausing movement
     }
 }
